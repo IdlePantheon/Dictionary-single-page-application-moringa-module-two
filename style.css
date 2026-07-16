@@ -1,3 +1,17 @@
+/*layout*/
+
+main
+{
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+}
+
+section
+{
+    margin-bottom: 1.75rem;
+}
+
 /* base */
 
 *
@@ -5,6 +19,7 @@
     box-sizing: border-box;
 }
 
+/*base*/
 .body
 {
     margin: 0;
@@ -64,4 +79,36 @@
     font-family: var(--sans);
     transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
+
+#themeToggle:hover
+{
+    background: var(--gold);
+    color: var(--paper-card);
+    transform: translateX(-2px);
+}
+
+/*focus-visibile*/
+
+#themeToggle:focus-visible
+{
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+
+}
+
+button:focus-visible
+{
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+
+}
+
+input:focus-visible
+{
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+
+}
+
+
 
