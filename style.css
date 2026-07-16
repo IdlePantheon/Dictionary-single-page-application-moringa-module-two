@@ -17,7 +17,7 @@ body.dark-theme {
   --bg: #0f172a;
   --box-bg: #1e293b;
   --text: #f1f5f9;
-  --border: #334155;
+  --border: #6f14df;
 }
 
 /* ============ BASE ============ */
@@ -78,7 +78,7 @@ main {
 }
 
 body.dark-theme .box-title {
-  color: #93c5fd;
+  color: #0b0e12;
 }
 
 .empty-text {
@@ -150,7 +150,7 @@ body.dark-theme .box-title {
   font-size: 1rem;
   font-weight: 600;
   background: var(--blue);
-  color: #ffffff;
+  color: #77d87c;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -178,7 +178,7 @@ body.dark-theme .box-title {
 }
 
 #errorMessage {
-  background: #fee2e2;
+  background: #924444;
   color: var(--red);
   border-left: 4px solid var(--red);
   padding: 0.8rem 1rem;
@@ -298,7 +298,7 @@ body.dark-theme .box-title {
 }
 
 body.dark-theme .favorite-word-btn {
-  color: #93c5fd;
+  color: #4411ee;
 }
 
 .favorite-remove-btn {

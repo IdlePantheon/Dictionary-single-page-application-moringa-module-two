@@ -277,13 +277,32 @@ function displayFavorites() {
 function toggleTheme() {
   document.body.classList.toggle("dark-theme");
   const isDark = document.body.classList.contains("dark-theme");
-  themeToggleBtn.textContent = isDark ? "☀️ Mwanga mode" : "🌙 Giza mode";
+  themeToggleBtn.textContent = isDark ? "Mwanga mode" : "Giza mode";
   localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
 }
 
-function restoreTheme() {
-  if (localStorage.getItem(THEME_KEY) === "dark") {
+function restoreTheme() 
+{
+  if (localStorage.getItem(THEME_KEY) === "dark") 
+    {
     document.body.classList.add("dark-theme");
-    themeToggleBtn.textContent = "☀️ Mwanga mode";
-  }
+    themeToggleBtn.textContent = "Mwanga mode";
+
+    let dark = false;
+
+    darkBtn.addEventListene("click", function()
+{    
+        if (dark) 
+            {
+                document.body.style.backgroundColor = "white";
+                document.body.style.backgroundColor = "black";
+            }
+        else    
+            {
+                document.body.style.backgroundColor = "black";
+                document.body.style.color = "white";
+            }
+
+            dark = !dark;
+        )
 }
