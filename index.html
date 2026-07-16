@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang ="en">
+    
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Dictionary ya Kenya</title>
@@ -8,8 +9,35 @@
     <body>
 
         <header>
-            <div class="brand">Word<span>ly</span></div>
+            <div class="brand">Dictionary ya Kenya</div>
+            <button id="themeToggle" arial-label="Toggle dark theme">GizGiz</button>
         </header>
+        
+        <main>
 
+            <form id="searchFrom" class="search-bar" role="search" aria-label="search for a word">
+                <label for="wordInput" class="visually-hidden">Uliza Bro</label>
+                <input
+                       type="text"
+                       id="wordInput"
+                       name="word"
+                       placeholder="Look up a word"
+                       aria-label="Word to search"
+                       autocomplete="off"
+                >
+                <button type="submit" arial-label="Search for definition">Search</button>
+            </form>
+
+            <p class="hint">Try a word like "bed" or "hello".</p>
+            <p id="loading" role="status">Searching...</p>
+            <div id="errorMessage" role="alert"></div>
+
+            <section id="results" aria-live="polite"></section>
+            <section id="saveSection">
+                <h2>Save words Here</h2>
+                <ul id="saveWordList" ariel-label="Your Save Words"></ul>
+                <p id="saveEmpty">No Saved Words</p> 
+            </section>
+        </main>
     </body>
 </html>
