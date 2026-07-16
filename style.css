@@ -1,5 +1,4 @@
 /*layout*/
-
 main
 {
     max-width: 800px;
@@ -12,12 +11,184 @@ section
     margin-bottom: 1.75rem;
 }
 
-/* base */
 
+/* base */
 *
 {
     box-sizing: border-box;
 }
+
+
+/* Search Form*/
+#searchForm
+{
+    display: flex;
+    gap: 0.50rem;
+    align-items: flex-end;
+}
+
+#searchForm label
+{
+    position: absolute;
+    width: 0.5px;
+    height: 0.5px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+#wordInput
+{
+    flex: 1;
+    padding: 0.70rem 0.5rem;
+}
+
+#wordInput:focus
+{
+    border-color: var(--gold);
+}
+
+
+/* Search Button */
+#searchBtn 
+{
+  padding: 0.85rem 1.6rem;
+  min-height: 48px;
+  font-size: 1rem;
+  font-family: var(--sans);
+  font-weight: 600;
+  background: var(--navy);
+  color: var(--paper);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+ 
+#searchBtn:hover:not(:disabled) 
+{
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+ 
+#searchBtn:active:not(:disabled) 
+{
+  transform: translateY(0);
+}
+ 
+#searchBtn:disabled 
+{
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+ 
+#loading 
+{
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0.75rem 0 0;
+}
+
+
+/* Message */
+#errorMessage 
+{
+  background: var(--error-bg);
+  color: var(--error);
+  border-left: 4px solid var(--error);
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+}
+
+
+/* Favorite */
+.favorites-section h2 {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  color: var(--navy);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.5rem;
+}
+ 
+#favoritesEmpty {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+ 
+#favoritesList {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+ 
+.favorite-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--paper-card);
+  border: 1.5px solid var(--gold);
+  border-radius: 999px;
+  padding: 0.3rem 0.4rem 0.3rem 0.9rem;
+}
+ 
+.favorite-item.active 
+{
+  background: var(--gold);
+}
+ 
+.favorite-item.active .favorite-word
+{
+  color: var(--paper-card);
+}
+
+.favorite-item.active .favorite-phonetic 
+{
+  color: var(--paper-card);
+}
+ 
+.favorite-word-btn 
+{
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  color: var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.2rem 0;
+}
+ 
+.favorite-phonetic 
+{
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+ 
+.favorite-remove-btn 
+{
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  color: var(--error);
+  border-radius: 50%;
+  width: 1.6rem;
+  height: 1.6rem;
+  min-width: 28px;
+  min-height: 28px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 /*base*/
 .body
@@ -36,6 +207,7 @@ section
 {
     display: none !important;
 }
+
 
 /* header alignment*/
 
@@ -87,8 +259,8 @@ section
     transform: translateX(-2px);
 }
 
-/*focus-visibile*/
 
+/*focus-visibile*/
 #themeToggle:focus-visible
 {
     outline: 3px solid var(--gold);
@@ -111,4 +283,50 @@ input:focus-visible
 }
 
 
+/* Responsive */
+@media (max-width: 520px) {
+  header {
+    padding: 1.25rem 1.25rem 3.5rem;
+  }
+  #themeToggle {
+    top: auto;
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+  #searchForm {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .entry-word {
+    font-size: 1.6rem;
+  }
+}
 
+:root 
+{
+  --paper: #F6F1E4;
+  --paper-card: #FFFFFF;
+  --ink: #1C2331;
+  --ink-soft: #4A5164;
+  --navy: #14213D;
+  --gold: #B8892B;
+  --rule: #D8CFB8;
+  --error: #A6372F;
+  --error-bg: #FBE9E7;
+  --radius: 6px;
+  --serif: Georgia, 'Times New Roman', Times, serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+ 
+body.dark-theme 
+{
+  --paper: #14182A;
+  --paper-card: #1E2440;
+  --ink: #EDE7D9;
+  --ink-soft: #B7B2A3;
+  --navy: #EDE7D9;
+  --gold: #E9C874;
+  --rule: #363C57;
+  --error: #FF8A80;
+  --error-bg: #3A1F1F;
+}
