@@ -1,72 +1,55 @@
 <!DOCTYPE html>
-<html lang ="en">
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kenyan Dictionary</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="body">
 
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>KENYAN DICTIONARY</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
+  <header class="header box">
+    <div class="brand">KENYAN <span>DICTIONARY</span></div>
+    <button id="themeToggle" aria-label="Toggle dark theme">🌙 Giza mode</button>
+  </header>
 
-        <header>
-            <div class="brand">KENYAN DICTIONARY</div>
-            <button id="themeToggle" arial-label="Toggle dark theme">GizGiz</button>
-        </header>
-        
-        <main>
+  <main>
 
+    <!-- SEARCH SECTION -->
+    <section class="box search-section">
+      <h2 class="box-title">Tafuta</h2>
+      <form id="searchForm">
+        <label for="wordInput" class="visually-hidden">Uliza Bro</label>
+        <input
+          type="text"
+          id="wordInput"
+          name="word"
+          placeholder="Andika neno... e.g. hello"
+          autocomplete="off"
+        >
+        <button type="submit" id="searchBtn">Tafuta</button>
+      </form>
+      <p class="hint">Tebu jaribu "hello".</p>
+      <p id="loading" class="hidden" role="status">Ngoja kidogo...</p>
+      <div id="errorMessage" class="hidden" role="alert"></div>
+    </section>
 
-            <section class="search-section">
-                <form id="searchFrom" class="search-bar" role="search" aria-label="search for a word">
-                    <label for="wordInput" 
-                        class="visually-hidden"
-                        >Uliza Bro
-                    </label>
+    <!-- DEFINITION SECTION -->
+    <section class="box">
+      <h2 class="box-title">Definition</h2>
+      <div id="results" class="hidden"></div>
+      <p id="resultsEmpty" class="empty-text">Search a word above to see its definition here.</p>
+    </section>
 
-                    <input
-                        type="text"
-                        id="wordInput"
-                        name="word"
-                        placeholder="Look up a word"
-                        aria-label="Word to search"
-                        autocomplete="off"
-                    >
-                    <button 
-                        type="submit" 
-                        arial-label="Search for definition"
-                        >Tafuta
-                    </button>
-                </form>
-            <p class="hint">Tebu jaribu "Hello".</p>
-            <p id="loading" class="hidden" role="status">Medi Nitafute..</p>
-            </section>
+    <!-- FAVORITES SECTION -->
+    <section class="box">
+      <h2 class="box-title">Saved Words</h2>
+      <p id="favoritesEmpty" class="empty-text">No saved words yet. Hit ☆ Save on a word to keep it here.</p>
+      <ul id="favoritesList"></ul>
+    </section>
 
-            <section class="message-section">
-                <div id="errorMessage" role="alert"></div>
-            </section>
-        
-            <section class="result-section"></section>   
-                <div id="results" class="hidden">
-            </section>
+  </main>
 
-            <section id="saveSection">
-                <h2>Save Hapa Bro</h2>
-                <p id="saveEmpty">No Saved Words</p> 
-                <ul id="saveWordList" ariel-label="Your Save Words"></ul>
-            </section>
-
-            <section class="favorites-section">
-                <h2>Favorites</h2>
-                <p id="fovoritesEmpty"></p>
-                <ul id="FavouriteList"></ul> 
-            </section>
-
-
-        </main>
-
-        <script 
-        src="./js/index.js" defer>
-        </script>
-
-    </body>
+  <script src="./js/index.js" defer></script>
+</body>
 </html>
