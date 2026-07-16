@@ -6,20 +6,33 @@
   <title>Kenyan Dictionary</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="body">
 
+<body>
+
+  <!-- ================= HEADER ================= -->
   <header class="header box">
     <div class="brand">KENYAN <span>DICTIONARY</span></div>
-    <button id="themeToggle" aria-label="Toggle dark theme">Giza mode</button>
+
+    <button
+      id="themeToggle"
+      type="button"
+      aria-label="Toggle dark mode">
+      Dark
+    </button>
   </header>
 
   <main>
 
-    <!-- SEARCH SECTION -->
+    <!-- ================= SEARCH ================= -->
     <section class="box search-section">
       <h2 class="box-title">Search</h2>
+
       <form id="searchForm">
-        <label for="wordInput" class="visually-hidden">Uliza Bro</label>
+
+        <label for="wordInput" class="visually-hidden">
+          Search for a word
+        </label>
+
         <input
           type="text"
           id="wordInput"
@@ -27,29 +40,70 @@
           placeholder="Andika neno... e.g. hello"
           autocomplete="off"
         >
-        <button type="submit" id="searchBtn">Tafuta</button>
+
+        <button
+          type="submit"
+          id="searchBtn">
+          Search
+        </button>
+
       </form>
-      <p class="hint">Try "hello".</p>
-      <p id="loading" class="hidden" role="status">Searching...</p>
-      <div id="errorMessage" class="hidden" role="alert"></div>
+
+      <p class="hint">
+        Try searching for words like "hello", "computer", or "dictionary".
+      </p>
+
+      <p
+        id="loading"
+        class="hidden"
+        role="status">
+        Searching...
+      </p>
+
+      <div
+        id="errorMessage"
+        class="hidden"
+        role="alert">
+      </div>
+
     </section>
 
-    <!-- DEFINITION SECTION -->
+    <!-- ================= RESULTS ================= -->
     <section class="box">
+
       <h2 class="box-title">Definition</h2>
-      <div id="results" class="hidden"></div>
-      <p id="resultsEmpty" class="empty-text">Search a word above to see its definition here.</p>
+
+      <div
+        id="results"
+        class="hidden">
+      </div>
+
+      <p
+        id="resultsEmpty"
+        class="empty-text">
+        Search a word above to see its definition here.
+      </p>
+
     </section>
 
-    <!-- FAVORITES SECTION -->
+    <!-- ================= FAVORITES ================= -->
     <section class="box">
+
       <h2 class="box-title">Saved Words</h2>
-      <p id="favoritesEmpty" class="empty-text">No saved words yet. Hit ☆ Save on a word to keep it here.</p>
+
+      <p
+        id="favoritesEmpty"
+        class="empty-text">
+        No saved words yet. Hit ☆ Save on a word to keep it here.
+      </p>
+
       <ul id="favoritesList"></ul>
+
     </section>
 
   </main>
 
-  <script src="./js/index.js" defer></script>
+  <script src="index.js"></script>
+
 </body>
 </html>
