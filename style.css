@@ -1,6 +1,7 @@
 
 /* BASE */
-* {
+* 
+{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -471,4 +472,4 @@ body.dark-theme .icon-btn.saved
     width: 100%;
     justify-content: space-between;
   }
-}
+};
