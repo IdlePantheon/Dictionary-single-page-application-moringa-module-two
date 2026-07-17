@@ -9,7 +9,6 @@
 
 <body>
 
-  <!-- ================= HEADER ================= -->
   <header class="header box">
     <div class="brand">KENYAN <span>DICTIONARY</span></div>
 
@@ -23,7 +22,7 @@
 
   <main>
 
-    <!-- ================= SEARCH ================= -->
+    <!-- SEARCH SECTION -->
     <section class="box search-section">
       <h2 class="box-title">Search</h2>
 
@@ -37,7 +36,7 @@
           type="text"
           id="wordInput"
           name="word"
-          placeholder="Andika neno... e.g. hello"
+          placeholder="Andika kitu/ Write something."
           autocomplete="off"
         >
 
@@ -50,7 +49,7 @@
       </form>
 
       <p class="hint">
-        Try searching for words like "hello", "computer", or "dictionary".
+        Try searching for words like "hello",
       </p>
 
       <p
@@ -68,7 +67,7 @@
 
     </section>
 
-    <!-- ================= RESULTS ================= -->
+    <!--  RESULTS SECTION -->
     <section class="box">
 
       <h2 class="box-title">Definition</h2>
@@ -78,26 +77,16 @@
         class="hidden">
       </div>
 
-      <p
-        id="resultsEmpty"
-        class="empty-text">
-        Search a word above to see its definition here.
-      </p>
+      <p id="resultsEmpty" class="empty-text"> Search to see the definition here. </p>
 
     </section>
 
-    <!-- ================= FAVORITES ================= -->
+    <!-- FAVORITES SECTION -->
     <section class="box">
 
-      <h2 class="box-title">Saved Words</h2>
-
-      <p
-        id="favoritesEmpty"
-        class="empty-text">
-        No saved words yet. Hit ☆ Save on a word to keep it here.
-      </p>
-
-      <ul id="favoritesList"></ul>
+        <h2 class="box-title">Favorite</h2>
+        <ul id="favoritesList"></ul>
+            <p id="favoritesEmpty" class="empty-text"> No Favorite mentioned, "Usikue mamba mslow" </p>
 
     </section>
 

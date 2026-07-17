@@ -1,591 +1,435 @@
-//CONSTANTS 
+// CONSTANTS
 const API_BASE = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 const FAVORITES_KEY = "wordly_favorites";
 const THEME_KEY = "wordly_theme";
 
-//GetElementByid
+// GET ELEMENTS FROM THE PAGE
 const searchForm = document.getElementById("searchForm");
 const wordInput = document.getElementById("wordInput");
 const searchBtn = document.getElementById("searchBtn");
-
 const loadingEl = document.getElementById("loading");
 const errorEl = document.getElementById("errorMessage");
-
 const resultsEl = document.getElementById("results");
 const resultsEmptyEl = document.getElementById("resultsEmpty");
-
 const themeToggleBtn = document.getElementById("themeToggle");
-
 const favoritesListEl = document.getElementById("favoritesList");
 const favoritesEmptyEl = document.getElementById("favoritesEmpty");
 
-// Holds the currently displayed dictionary entry
+// Keeps track of the word that is currently on screen
 let currentEntry = null;
 
-//STARTUP 
-document.addEventListener("DOMContentLoaded", function () 
-{
-    restoreTheme();
-    displayFavorites();
+
+// RUN ON PAGE LOAD
+document.addEventListener("DOMContentLoaded", function () {
+  restoreTheme();
+  displayFavorites();
 });
 
 
-//EventListeners
-// Search form
+// MAIN EVENT LISTENERS
 searchForm.addEventListener("submit", handleSearch);
-
-// Dark mode button
 themeToggleBtn.addEventListener("click", toggleTheme);
 
-// Handle buttons created dynamically inside the results
-resultsEl.addEventListener("click", function (event) 
-{
 
-    if (event.target.closest(".save-btn")) 
-    {
-        handleSaveToggle();
-    }
-
-    const audioBtn = event.target.closest(".audio-btn");
-
-    if (audioBtn && !audioBtn.disabled) 
-    {
-        playAudio(audioBtn.dataset.audioUrl);
-    }
-
-}
-);
-
-// Handle buttons inside Saved Words
-favoritesListEl.addEventListener("click", function (event) 
-{
-
-    const searchAgainBtn =
-        event.target.closest(".favorite-word-btn");
-
-         if (searchAgainBtn) 
-            {
-
-              wordInput.value = searchAgainBtn.dataset.word;
-              fetchWord(searchAgainBtn.dataset.word);
-
-            }
-
-    const removeBtn =
-        event.target.closest(".favorite-remove-btn");
-
-    if (removeBtn) {
-
-        removeFavorite(removeBtn.dataset.word);
-
-    }
-
-});
-
-//SEARCH
+// SEARCH HANDLING
 function handleSearch(event) {
+  event.preventDefault();
 
-    event.preventDefault();
+  const word = wordInput.value.trim().toLowerCase();
 
-    const word =
-        wordInput.value.trim().toLowerCase();
+  hideError();
 
-    hideError();
+    if (word === "") 
+        {
+            clearResults();
+            showError("Please enter a word.");
+            return;
+        }
 
-    if (word === "") {
-
-        // FIX: clear any previous result instead of stacking the
-        // error message on top of an old definition
-        clearResults();
-
-        showError("Please enter a word.");
-
-        return;
-
-    }
-
-    fetchWord(word);
-
+  fetchWord(word);
 }
 
-//API 
 
+// FETCH THE WORD FROM THE API
 async function fetchWord(word) {
+  setLoading(true);
+  hideError();
+  clearResults();
 
-    setLoading(true);
+  try {
+    const response = await fetch(API_BASE + word);
 
-    hideError();
-
-    clearResults();
-
-    try {
-
-        const response = await fetch(
-            API_BASE + encodeURIComponent(word)
-        );
-
-        if (response.status === 404) {
-
-            showError(
-                "We could not find that word. Check the spelling and try again."
-            );
-
-            return;
-
-        }
-
-        if (!response.ok) {
-
-            showError(
-                "Something went wrong. Please try again."
-            );
-
-            return;
-
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
-
-            showError(
-                "Something went wrong. Please try again."
-            );
-
-            return;
-
-        }
-
-        renderWord(data[0]);
-
+    if (response.status === 404) {
+      showError("We could not find that word. Check the spelling and try again.");
+      return;
     }
 
-    catch (error) {
-
-        console.error(error);
-
-        showError(
-            "Unable to connect. Please check your internet connection."
-        );
-
+    if (!response.ok) {
+      showError("Something went wrong. Please try again.");
+      return;
     }
 
-    finally 
-    {
-        setLoading(false);
+    const data = await response.json();
+
+    if (data.length === 0) {
+      showError("Something went wrong. Please try again.");
+      return;
     }
 
+    // The API gives back a list of entries — we just use the first one
+    renderWord(data[0]);
+
+  } catch (error) {
+    console.error(error);
+    showError("Unable to connect. Please check your internet connection.");
+  } finally {
+    setLoading(false);
+  }
 }
 
-//UI HELPERS
+
+// SMALL HELPER FUNCTIONS FOR LOADING
 function setLoading(isLoading) {
-
-    loadingEl.classList.toggle(
-        "hidden",
-        !isLoading
-    );
-
-    searchBtn.disabled = isLoading;
-
+    if (isLoading) 
+        {
+            loadingEl.classList.remove("hidden");
+            searchBtn.disabled = true;
+        } 
+    else 
+        {
+            loadingEl.classList.add("hidden");
+             searchBtn.disabled = false;
+        }
 }
 
+//ERROR FUCTIONS
 function showError(message) {
-
-    errorEl.textContent = message;
-
-    errorEl.classList.remove("hidden");
-
+  errorEl.textContent = message;
+  errorEl.classList.remove("hidden");
 }
 
 function hideError() {
-
-    errorEl.textContent = "";
-
-    errorEl.classList.add("hidden");
-
+  errorEl.textContent = "";
+  errorEl.classList.add("hidden");
 }
 
-// FIX: new helper so both handleSearch and fetchWord can reset the
-// results panel back to its empty state consistently
 function clearResults() {
-
-    resultsEl.innerHTML = "";
-
-    resultsEl.classList.add("hidden");
-
-    resultsEmptyEl.classList.remove("hidden");
-
-    currentEntry = null;
-
+  resultsEl.innerHTML = "";
+  resultsEl.classList.add("hidden");
+  resultsEmptyEl.classList.remove("hidden");
+  currentEntry = null;
 }
 
 
-//RENDER WORD
-
-function renderWord(entry) {
-
-    currentEntry = entry;
-
-    const phonetic = getPhonetic(entry);
-    const audioUrl = getAudioUrl(entry);
-    const saved = isFavorite(entry.word);
-
-    let meaningsHtml = "";
-
-    const meanings = Array.isArray(entry.meanings) ? entry.meanings : [];
-
-    for (let i = 0; i < meanings.length; i++) {
-
-        meaningsHtml += renderMeaning(meanings[i]);
-
-    }
-
-    resultsEl.innerHTML = `
-        <h3 class="entry-word">${entry.word}</h3>
-
-        ${phonetic
-            ? `<p class="entry-phonetic">${phonetic}</p>`
-            : ""
-        }
-
-        <div class="entry-actions">
-
-            <button
-                type="button"
-                class="icon-btn audio-btn"
-                ${
-                    audioUrl
-                        ? `data-audio-url="${audioUrl}"`
-                        : "disabled"
-                }>
-                Voice
-            </button>
-
-            <button
-                type="button"
-                class="icon-btn save-btn ${saved ? "saved" : ""}">
-                ${saved ? "★ Saved" : "☆ Save"}
-            </button>
-
-        </div>
-
-        ${meaningsHtml}
-    `;
-
-    resultsEl.classList.remove("hidden");
-    resultsEmptyEl.classList.add("hidden");
-
-}
-
-//RENDER MEANING 
-
-function renderMeaning(meaning) {
-
-    const definitions = Array.isArray(meaning.definitions) ? meaning.definitions : [];
-
-    let definitionsHtml = "";
-
-    const maxDefinitions = Math.min(
-        definitions.length,
-        3
-    );
-
-    for (let i = 0; i < maxDefinitions; i++) {
-
-        const definition = definitions[i];
-
-        const example = definition.example
-            ? `<div class="example">"${definition.example}"</div>`
-            : "";
-
-        definitionsHtml += `
-            <li>
-                <div>${definition.definition}</div>
-                ${example}
-            </li>
-        `;
-
-    }
-
-    return `
-        <h4 class="part-of-speech">
-            ${meaning.partOfSpeech}
-        </h4>
-
-        <ol class="definition-list">
-            ${definitionsHtml}
-        </ol>
-    `;
-
-}
-
-//PHONETIC 
+// FIND THE PHONETIC TEXT (e.g. "/heˈloʊ/")
 
 function getPhonetic(entry) {
+  if (entry.phonetic) {
+    return entry.phonetic;
+  }
 
-    if (entry.phonetic) {
-
-        return entry.phonetic;
-
-    }
-
-    // FIX: guard against entries where "phonetics" is missing entirely
-    if (!Array.isArray(entry.phonetics)) {
-
-        return "";
-
-    }
-
-    for (let i = 0; i < entry.phonetics.length; i++) {
-
-        if (entry.phonetics[i] && entry.phonetics[i].text) {
-
-            return entry.phonetics[i].text;
-
-        }
-
-    }
-
+  if (!entry.phonetics) {
     return "";
+  }
 
+  for (let i = 0; i < entry.phonetics.length; i++) {
+    if (entry.phonetics[i].text) {
+      return entry.phonetics[i].text;
+    }
+  }
+
+  return "";
 }
 
-//AUDIO
+
+// FIND AN AUDIO LINK, IF ONE EXISTS
 
 function getAudioUrl(entry) {
-
-    // FIX: same guard here — no phonetics array means no audio, not a crash
-    if (!Array.isArray(entry.phonetics)) {
-
-        return "";
-
-    }
-
-    for (let i = 0; i < entry.phonetics.length; i++) {
-
-        if (entry.phonetics[i] && entry.phonetics[i].audio) {
-
-            return entry.phonetics[i].audio;
-
-        }
-
-    }
-
+  if (!entry.phonetics) {
     return "";
+  }
 
+  for (let i = 0; i < entry.phonetics.length; i++) {
+    if (entry.phonetics[i].audio) {
+      return entry.phonetics[i].audio;
+    }
+  }
+
+  return "";
 }
+
+
+// BUILD THE HTML FOR ONE MEANING (e.g. "noun")
+
+function buildMeaningHtml(meaning) {
+  let definitionsHtml = "";
+
+  const maxDefinitions = Math.min(meaning.definitions.length, 3);
+
+  for (let i = 0; i < maxDefinitions; i++) {
+    const definition = meaning.definitions[i];
+
+    definitionsHtml += "<li><div>" + definition.definition + "</div>";
+
+    if (definition.example) {
+      definitionsHtml += '<div class="example">"' + definition.example + '"</div>';
+    }
+
+    definitionsHtml += "</li>";
+  }
+
+  let meaningHtml = '<h4 class="part-of-speech">' + meaning.partOfSpeech + "</h4>";
+  meaningHtml += '<ol class="definition-list">' + definitionsHtml + "</ol>";
+
+  return meaningHtml;
+}
+
+
+// SHOW THE WORD ON THE PAGE
+function renderWord(entry) 
+{
+  currentEntry = entry;
+
+  const phonetic = getPhonetic(entry);
+  const audioUrl = getAudioUrl(entry);
+  const saved = isFavorite(entry.word);
+
+  // Build the meanings section
+  let meaningsHtml = "";
+  for (let i = 0; i < entry.meanings.length; i++) {
+    meaningsHtml += buildMeaningHtml(entry.meanings[i]);
+  }
+
+  // Build the phonetic line (only if we found one)
+  let phoneticHtml = "";
+  if (phonetic !== "") {
+    phoneticHtml = '<p class="entry-phonetic">' + phonetic + "</p>";
+  }
+
+  // Build the save button label
+  let saveLabel = "☆ Save";
+  let saveClass = "icon-btn save-btn";
+  if (saved) {
+    saveLabel = "★ Saved";
+    saveClass = "icon-btn save-btn saved";
+  }
+
+  // Build the audio button — disabled if there is no audio
+  let audioButtonHtml;
+  if (audioUrl !== "") {
+    audioButtonHtml = '<button type="button" id="audioBtn" class="icon-btn">Voice</button>';
+  } else {
+    audioButtonHtml = '<button type="button" id="audioBtn" class="icon-btn" disabled>Voice</button>';
+  }
+
+  resultsEl.innerHTML =
+    '<h3 class="entry-word">' + entry.word + "</h3>" +
+    phoneticHtml +
+    '<div class="entry-actions">' +
+      audioButtonHtml +
+      '<button type="button" id="saveBtn" class="' + saveClass + '">' + saveLabel + "</button>" +
+    "</div>" +
+    meaningsHtml;
+
+  resultsEl.classList.remove("hidden");
+  resultsEmptyEl.classList.add("hidden");
+
+  // Now that the buttons exist on the page, connect them to their functions
+  const audioBtn = document.getElementById("audioBtn");
+  audioBtn.addEventListener("click", function () {
+    playAudio(audioUrl);
+  });
+
+  const saveBtn = document.getElementById("saveBtn");
+  saveBtn.addEventListener("click", function () {
+    handleSaveToggle();
+  });
+}
+
+
+// PLAY THE AUDIO
 
 function playAudio(url) {
+  if (url === "") {
+    return;
+  }
 
-    if (!url) {
-
-        return;
-
-    }
-
-    const audio = new Audio(url);
-
-    audio.play().catch(function () {
-
-        showError(
-            "Audio could not be played right now."
-        );
-
-    });
-
+  const audio = new Audio(url);
+  audio.play().catch(function () {
+    showError("Audio could not be played right now.");
+  });
 }
 
 
-// FAVORITES 
+// FAVORITES — READ FROM LOCAL STORAGE
+
 function getFavorites() {
+  const raw = localStorage.getItem(FAVORITES_KEY);
 
-    const raw = localStorage.getItem(FAVORITES_KEY);
+  if (!raw) {
+    return [];
+  }
 
-    if (!raw) {
-        return [];
-    }
-
-    try {
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        return [];
-    }
-
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return [];
+  }
 }
 
 function isFavorite(word) {
+  const favorites = getFavorites();
 
-    const favorites = getFavorites();
-
-    for (let i = 0; i < favorites.length; i++) {
-
-        if (
-            favorites[i].word.toLowerCase() ===
-            word.toLowerCase()
-        ) {
-            return true;
-        }
-
+  for (let i = 0; i < favorites.length; i++) {
+    if (favorites[i].word.toLowerCase() === word.toLowerCase()) {
+      return true;
     }
+  }
 
-    return false;
-
+  return false;
 }
 
+
+// SAVE OR REMOVE THE CURRENT WORD
+
 function handleSaveToggle() {
+  if (!currentEntry) {
+    return;
+  }
 
-    if (!currentEntry) 
-        {
-            return;
-        }
-    if (isFavorite(currentEntry.word)) {
+  if (isFavorite(currentEntry.word)) {
+    removeFavorite(currentEntry.word);
+  } else {
+    const favorites = getFavorites();
+    favorites.push({
+      word: currentEntry.word,
+      phonetic: getPhonetic(currentEntry)
+    });
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    displayFavorites();
+  }
 
-        removeFavorite(currentEntry.word);
-
-    } else {
-
-        const favorites = getFavorites();
-
-        favorites.push({
-            word: currentEntry.word,
-            phonetic: getPhonetic(currentEntry)
-        });
-
-        localStorage.setItem(
-            FAVORITES_KEY,
-            JSON.stringify(favorites)
-        );
-
-        displayFavorites();
-
-    }
-
-    // Refresh save button
-    renderWord(currentEntry);
-
+  // Re-draw the word so the save button updates too
+  renderWord(currentEntry);
 }
 
 function removeFavorite(word) {
+  const favorites = getFavorites();
+  const updated = [];
 
+  for (let i = 0; i < favorites.length; i++) {
+    if (favorites[i].word.toLowerCase() !== word.toLowerCase()) {
+      updated.push(favorites[i]);
+    }
+  }
+
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+  displayFavorites();
+
+  if (currentEntry && currentEntry.word.toLowerCase() === word.toLowerCase()) {
+    renderWord(currentEntry);
+  }
+}
+
+
+// SHOW THE SAVED WORDS LIST
+
+function displayFavorites() 
+{
     const favorites = getFavorites();
 
-    const updated = favorites.filter(function (favorite) {
+    if (favorites.length === 0) 
+        {
+            favoritesListEl.innerHTML = "";
+            favoritesEmptyEl.classList.remove("hidden");
+            return;
+        }
 
-        return (
-            favorite.word.toLowerCase() !==
-            word.toLowerCase()
-        );
+  favoritesEmptyEl.classList.add("hidden");
 
-    });
+  let html = "";
+  for (let i = 0; i < favorites.length; i++) 
+    {
+        const favorite = favorites[i];
 
-    localStorage.setItem(
-        FAVORITES_KEY,
-        JSON.stringify(updated)
+        let phoneticHtml = "";
+        if (favorite.phonetic) 
+            {
+                phoneticHtml = "<small>" + favorite.phonetic + "</small>";
+            }
+
+        html +=
+                '<li class="favorite-item">' +
+                '<button type="button" class="favorite-word-btn">' +
+                "<span>" 
+                + favorite.word + 
+                "</span>" +
+          phoneticHtml +
+        "</button>" +
+        '<button type="button" class="favorite-remove-btn">✕</button>' +
+      "</li>";
+    }
+
+  favoritesListEl.innerHTML = html;
+
+  // Connect each word button and each remove button to its function.
+  // Using "let" in the loop means each button remembers its own word.
+  const wordButtons = favoritesListEl.querySelectorAll(".favorite-word-btn");
+  const removeButtons = favoritesListEl.querySelectorAll(".favorite-remove-btn");
+
+  for (let i = 0; i < favorites.length; i++) {
+    const word = favorites[i].word;
+
+    wordButtons[i].addEventListener
+    ("click", function () 
+        {
+            wordInput.value = word;
+            fetchWord(word);
+        }
     );
 
-    displayFavorites();
-
-    if (
-        currentEntry &&
-        currentEntry.word.toLowerCase() ===
-        word.toLowerCase()
-    ) {
-
-        renderWord(currentEntry);
-
-    }
-
+    removeButtons[i].addEventListener
+    ("click", function () 
+        {
+            removeFavorite(word);
+        }
+    );
+  }
 }
 
-function displayFavorites() {
 
-    const favorites = getFavorites();
-
-    if (favorites.length === 0) {
-
-        favoritesListEl.innerHTML = "";
-
-        favoritesEmptyEl.classList.remove("hidden");
-
-        return;
-
-    }
-
-    favoritesEmptyEl.classList.add("hidden");
-
-    let html = "";
-
-    favorites.forEach(function (favorite) {
-
-        html += `
-            <li class="favorite-item">
-
-                <button
-                    type="button"
-                    class="favorite-word-btn"
-                    data-word="${favorite.word}">
-
-                    <span>${favorite.word}</span>
-
-                    ${
-                        favorite.phonetic
-                        ? `<small>${favorite.phonetic}</small>`
-                        : ""
-                    }
-
-                </button>
-
-                <button
-                    type="button"
-                    class="favorite-remove-btn"
-                    data-word="${favorite.word}"
-                    aria-label="Remove ${favorite.word}">
-
-                    ✕
-                </button>
-
-            </li>
-        `;
-
-    });
-
-    favoritesListEl.innerHTML = html;
-
-}
-
-//THEME
+// DARK / LIGHT THEME
 function toggleTheme() 
 {
     document.body.classList.toggle("dark-theme");
 
-    const isDark =
-        document.body.classList.contains("dark-theme");
+    const isDark = document.body.classList.contains("dark-theme");
 
-    themeToggleBtn.textContent =
-        isDark ? "Naona" : "Giz Giz";
+        
+    if (isDark) 
+        {
+            themeToggleBtn.textContent = "Giza";
+        } 
+    else 
+        {
+            themeToggleBtn.textContent = "Naona";
+        }
 
-    localStorage.setItem(
-        THEME_KEY,
-        isDark ? "dark" : "light"
-    );
-
+  localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
 }
 
 function restoreTheme() 
 {
-    const savedTheme =
-        localStorage.getItem(THEME_KEY);
+    const savedTheme = localStorage.getItem(THEME_KEY);
 
     if (savedTheme === "dark") 
-    {
-        document.body.classList.add("dark-theme");
-        themeToggleBtn.textContent = "Light mode";
-    } 
+        {
+            document.body.classList.add("dark-theme");
+            themeToggleBtn.textContent = "Giza";
+        } 
     else 
-    {
-        document.body.classList.remove("dark-theme");
-        themeToggleBtn.textContent = "Dark";
-    }
-
-};
+        {
+            document.body.classList.remove("dark-theme");
+            themeToggleBtn.textContent = "Naona";
+        }
+}
